@@ -8,6 +8,7 @@ usage() {
     echo "  -s, --start         Start time in seconds"
     echo "  -e, --end           End time in seconds"
     echo "  -v, --volume        Volume (0-100)"
+    echo "  -d, --devices       List available audio devices"
     echo "  -h, --help          Display this help message"
     exit 1
 }
@@ -43,6 +44,11 @@ while [[ $# -gt 0 ]]; do
         -v|--volume)
             VOLUME="$2"
             shift 2
+            ;;
+        -d|--devices)
+            echo "Available audio devices:"
+            mpv --audio-device=help
+            exit 0
             ;;
         -h|--help)
             usage
