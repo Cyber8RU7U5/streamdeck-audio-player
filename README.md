@@ -6,6 +6,14 @@ This script was made to do some extra tasks before actually playing the audio. T
 
 The [`streamdeck-ui`](https://timothycrosley.github.io/streamdeck-ui/) is missing this option, hence this GPT-o4-mini vibe-coded repository.
 
+## GPT-o4-mini: Security Notice
+
+This script is designed for personal use and accepts certain security trade-offs for convenience:
+
+- **Path Access**: The script can access any file path on the system. This is intentional for flexibility but means it should be used with care.
+- **Process Management**: The script will only stop mpv processes that are playing the exact same file.
+- **Input Validation**: All numeric inputs and device names are validated to prevent command injection.
+- **Environment Variables**: The .env file is checked for proper ownership and file type.
 
 Have fun!
 

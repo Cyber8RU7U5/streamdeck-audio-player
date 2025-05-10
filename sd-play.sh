@@ -1,5 +1,26 @@
 #!/bin/bash
 
+# Security settings
+set -euo pipefail
+IFS=$'\n\t'
+
+# Function to sanitize path
+sanitize_path() {
+    local path="$1"
+    # Convert to absolute path
+    path=$(realpath -- "$path")
+    echo "$path"
+}
+
+# Function to validate numeric input
+validate_number() {
+    local num="$1"
+    if ! [[ "$num" =~ ^-?[0-9]+$ ]]; then
+        echo "Error: '$num' is not a valid number"
+        exit 1
+    fi
+}
+
 # Function to display usage
 usage() {
     echo "Usage: $0 [options] <audio_file>"
@@ -22,8 +43,18 @@ VOLUME=100
 AUDIO_FILE=""
 AUDIO_DEVICE=""
 
-# Source .env file if it exists
+# Source .env file if it exists (with validation)
 if [[ -f ".env" ]]; then
+    # Check if .env is a regular file
+    if [[ ! -f ".env" ]] || [[ -L ".env" ]]; then
+        echo "Error: Invalid .env file"
+        exit 1
+    fi
+    # Check if .env is owned by the current user
+    if [[ "$(stat -c %u .env)" != "$(id -u)" ]]; then
+        echo "Error: .env file must be owned by the current user"
+        exit 1
+    fi
     source .env
 fi
 
@@ -38,34 +69,50 @@ while [[ $# -gt 0 ]]; do
     case $1 in
         -l=*|--loop=*)
             LOOP="${1#*=}"
+            validate_number "$LOOP"
             shift
             ;;
         -l|--loop)
             LOOP="$2"
+            validate_number "$LOOP"
             shift 2
             ;;
         -s=*|--start=*)
             START_TIME="${1#*=}"
+            validate_number "$START_TIME"
             shift
             ;;
         -s|--start)
             START_TIME="$2"
+            validate_number "$START_TIME"
             shift 2
             ;;
         -e=*|--end=*)
             END_TIME="${1#*=}"
+            validate_number "$END_TIME"
             shift
             ;;
         -e|--end)
             END_TIME="$2"
+            validate_number "$END_TIME"
             shift 2
             ;;
         -v=*|--volume=*)
             VOLUME="${1#*=}"
+            validate_number "$VOLUME"
+            if [[ "$VOLUME" -lt 0 ]] || [[ "$VOLUME" -gt 100 ]]; then
+                echo "Error: Volume must be between 0 and 100"
+                exit 1
+            fi
             shift
             ;;
         -v|--volume)
             VOLUME="$2"
+            validate_number "$VOLUME"
+            if [[ "$VOLUME" -lt 0 ]] || [[ "$VOLUME" -gt 100 ]]; then
+                echo "Error: Volume must be between 0 and 100"
+                exit 1
+            fi
             shift 2
             ;;
         -L|--list)
@@ -75,10 +122,20 @@ while [[ $# -gt 0 ]]; do
             ;;
         -d=*|--device=*)
             AUDIO_DEVICE="${1#*=}"
+            # Basic sanitization of device name
+            if [[ ! "$AUDIO_DEVICE" =~ ^[a-zA-Z0-9_/.-]+$ ]]; then
+                echo "Error: Invalid device name"
+                exit 1
+            fi
             shift
             ;;
         -d|--device)
             AUDIO_DEVICE="$2"
+            # Basic sanitization of device name
+            if [[ ! "$AUDIO_DEVICE" =~ ^[a-zA-Z0-9_/.-]+$ ]]; then
+                echo "Error: Invalid device name"
+                exit 1
+            fi
             shift 2
             ;;
         -h|--help)
@@ -102,14 +159,14 @@ if [[ -z "$AUDIO_FILE" ]]; then
     usage
 fi
 
-# Check if file exists
-if [[ ! -f "$AUDIO_FILE" ]]; then
-    echo "Error: File '$AUDIO_FILE' does not exist"
+# Sanitize and validate the audio file path
+AUDIO_FILE_ABS=$(sanitize_path "$AUDIO_FILE")
+
+# Check if file exists and is a regular file
+if [[ ! -f "$AUDIO_FILE_ABS" ]] || [[ -L "$AUDIO_FILE_ABS" ]]; then
+    echo "Error: File '$AUDIO_FILE_ABS' does not exist or is not a regular file"
     exit 1
 fi
-
-# Get absolute path of the audio file
-AUDIO_FILE_ABS=$(realpath "$AUDIO_FILE")
 
 # Find the PID(s) of mpv playing exactly this file
 PIDS=$(pgrep -af "mpv" | awk -v file="$AUDIO_FILE_ABS" '
@@ -124,6 +181,18 @@ PIDS=$(pgrep -af "mpv" | awk -v file="$AUDIO_FILE_ABS" '
 
 if [[ -n "$PIDS" ]]; then
     echo "This exact audio file is already playing. Stopping..."
+    # Validate PIDs before killing
+    for pid in $PIDS; do
+        if [[ ! "$pid" =~ ^[0-9]+$ ]]; then
+            echo "Error: Invalid PID found"
+            exit 1
+        fi
+        # Check if the process is actually mpv
+        if ! ps -p "$pid" -o comm= | grep -q "^mpv$"; then
+            echo "Error: Process $pid is not mpv"
+            exit 1
+        fi
+    done
     kill $PIDS
     exit 0
 fi
@@ -156,8 +225,8 @@ fi
 # Add volume
 MPV_CMD="$MPV_CMD --volume=$VOLUME"
 
-# Add audio file
-MPV_CMD="$MPV_CMD \"$AUDIO_FILE\""
+# Add audio file (using sanitized path)
+MPV_CMD="$MPV_CMD \"$AUDIO_FILE_ABS\""
 
 # Execute the command in background with proper process management
 nohup bash -c "$MPV_CMD" > /dev/null 2>&1 &
