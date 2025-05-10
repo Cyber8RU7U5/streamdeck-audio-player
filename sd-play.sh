@@ -71,18 +71,24 @@ VOLUME=100
 AUDIO_FILE=""
 AUDIO_DEVICE=""
 
-# Check if mpv is installed
-if ! command -v mpv &> /dev/null; then
-    echo "Error: mpv is not installed. Please install it first."
-    exit 1
-fi
-
 # Function to send notification if notify-send is available
 send_notification() {
     if command -v notify-send &> /dev/null; then
         notify-send "StreamDeck Audio Player" "$1"
     fi
 }
+
+# Function to send error notification
+send_error() {
+    echo "Error: $1"
+    send_notification "Error: $1"
+    exit 1
+}
+
+# Check if mpv is installed
+if ! command -v mpv &> /dev/null; then
+    send_error "mpv is not installed. Please install it first."
+fi
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
@@ -175,8 +181,7 @@ done
 
 # Check if audio file is provided
 if [[ -z "$AUDIO_FILE" ]]; then
-    echo "Error: No audio file specified"
-    usage
+    send_error "No audio file specified"
 fi
 
 # Sanitize and validate the audio file path
@@ -184,8 +189,7 @@ AUDIO_FILE_ABS=$(sanitize_path "$AUDIO_FILE")
 
 # Check if file exists and is a regular file
 if [[ ! -f "$AUDIO_FILE_ABS" ]] || [[ -L "$AUDIO_FILE_ABS" ]]; then
-    echo "Error: File '$AUDIO_FILE_ABS' does not exist or is not a regular file"
-    exit 1
+    send_error "File '$AUDIO_FILE_ABS' does not exist or is not a regular file"
 fi
 
 # Find the PID(s) of mpv playing exactly this file
@@ -208,13 +212,11 @@ if [[ -n "$PIDS" ]]; then
     # Validate PIDs before killing
     for pid in $PIDS; do
         if [[ ! "$pid" =~ ^[0-9]+$ ]]; then
-            echo "Error: Invalid PID found"
-            exit 1
+            send_error "Invalid PID found"
         fi
         # Check if the process is actually mpv
         if ! ps -p "$pid" -o comm= | grep -q "^mpv$"; then
-            echo "Error: Process $pid is not mpv"
-            exit 1
+            send_error "Process $pid is not mpv"
         fi
     done
     kill $PIDS
