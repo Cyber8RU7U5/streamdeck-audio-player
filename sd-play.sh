@@ -31,17 +31,33 @@ fi
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
     case $1 in
+        -l=*|--loop=*)
+            LOOP="${1#*=}"
+            shift
+            ;;
         -l|--loop)
             LOOP="$2"
             shift 2
+            ;;
+        -s=*|--start=*)
+            START_TIME="${1#*=}"
+            shift
             ;;
         -s|--start)
             START_TIME="$2"
             shift 2
             ;;
+        -e=*|--end=*)
+            END_TIME="${1#*=}"
+            shift
+            ;;
         -e|--end)
             END_TIME="$2"
             shift 2
+            ;;
+        -v=*|--volume=*)
+            VOLUME="${1#*=}"
+            shift
             ;;
         -v|--volume)
             VOLUME="$2"
@@ -51,6 +67,10 @@ while [[ $# -gt 0 ]]; do
             echo "Available audio devices:"
             mpv --audio-device=help
             exit 0
+            ;;
+        -d=*|--device=*)
+            AUDIO_DEVICE="${1#*=}"
+            shift
             ;;
         -d|--device)
             AUDIO_DEVICE="$2"
