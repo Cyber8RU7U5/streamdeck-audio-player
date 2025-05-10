@@ -71,10 +71,23 @@ if [[ ! -f "$AUDIO_FILE" ]]; then
     exit 1
 fi
 
-# Check if audio is already playing
-if pgrep -f "mpv.*$AUDIO_FILE" > /dev/null; then
-    echo "Audio is already playing. Stopping..."
-    pkill -f "mpv.*$AUDIO_FILE"
+# Get absolute path of the audio file
+AUDIO_FILE_ABS=$(realpath "$AUDIO_FILE")
+
+# Find the PID(s) of mpv playing exactly this file
+PIDS=$(pgrep -af "mpv" | awk -v file="$AUDIO_FILE_ABS" '
+    {
+        for (i=2; i<=NF; i++) {
+            if ($i == file) {
+                print $1
+            }
+        }
+    }
+')
+
+if [[ -n "$PIDS" ]]; then
+    echo "This exact audio file is already playing. Stopping..."
+    kill $PIDS
     exit 0
 fi
 
