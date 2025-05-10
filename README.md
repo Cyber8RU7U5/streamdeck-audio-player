@@ -2,6 +2,13 @@
 
 A bash script for playing audio files with various options, designed to work with Streamdeck.
 
+This script was made to do some extra tasks before actually playing the audio. The main part is to stop the audio if it is already playing, I need this for my Dungeons and Dragon campaign.
+
+The [`streamdeck-ui`](https://timothycrosley.github.io/streamdeck-ui/) is missing this option, hence this GPT-o4-mini vibe-coded repository.
+
+
+Have fun!
+
 ## Quick Start
 
 ```bash
