@@ -15,6 +15,12 @@ This script is designed for personal use and accepts certain security trade-offs
 - **Input Validation**: All numeric inputs and device names are validated to prevent command injection.
 - **Environment Variables**: The .env file is checked for proper ownership and file type.
 
+## Documentation
+
+- [Changelog](CHANGELOG.md) - History of changes
+- [Contributing](CONTRIBUTING.md) - How to contribute
+- [License](LICENSE) - MIT License
+
 Have fun!
 
 ## Quick Start
