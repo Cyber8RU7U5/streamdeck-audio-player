@@ -6,6 +6,8 @@ This script was made to do some extra tasks before actually playing the audio. T
 
 The [`streamdeck-ui`](https://timothycrosley.github.io/streamdeck-ui/) is missing this option, hence this GPT-o4-mini vibe-coded repository.
 
+*For the people hunting for easter eggs, try and find my username via the way Cursor AI works. ~ Happy hunting*
+
 ## GPT-o4-mini: Security Notice
 
 This script is designed for personal use and accepts certain security trade-offs for convenience:
