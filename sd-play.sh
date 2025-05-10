@@ -9,6 +9,7 @@ usage() {
     echo "  -e, --end           End time in seconds"
     echo "  -v, --volume        Volume (0-100)"
     echo "  -d, --devices       List available audio devices"
+    echo "  -D, --device        Specify audio device to use"
     echo "  -h, --help          Display this help message"
     exit 1
 }
@@ -19,6 +20,7 @@ START_TIME=""
 END_TIME=""
 VOLUME=100
 AUDIO_FILE=""
+AUDIO_DEVICE=""
 
 # Check if mpv is installed
 if ! command -v mpv &> /dev/null; then
@@ -49,6 +51,10 @@ while [[ $# -gt 0 ]]; do
             echo "Available audio devices:"
             mpv --audio-device=help
             exit 0
+            ;;
+        -D|--device)
+            AUDIO_DEVICE="$2"
+            shift 2
             ;;
         -h|--help)
             usage
@@ -99,6 +105,11 @@ fi
 
 # Build mpv command
 MPV_CMD="mpv --no-terminal --no-resume-playback --no-keep-open"
+
+# Add audio device if specified
+if [[ -n "$AUDIO_DEVICE" ]]; then
+    MPV_CMD="$MPV_CMD --audio-device='$AUDIO_DEVICE'"
+fi
 
 # Add loop option
 if [[ "$LOOP" == "-1" ]]; then
