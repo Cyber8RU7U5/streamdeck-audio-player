@@ -92,11 +92,11 @@ if [[ -n "$PIDS" ]]; then
 fi
 
 # Build mpv command
-MPV_CMD="mpv --no-terminal"
+MPV_CMD="mpv --no-terminal --no-resume-playback --no-keep-open"
 
 # Add loop option
 if [[ "$LOOP" == "-1" ]]; then
-    MPV_CMD="$MPV_CMD --loop=0"
+    MPV_CMD="$MPV_CMD --loop=inf"
 else
     MPV_CMD="$MPV_CMD --loop=$LOOP"
 fi
