@@ -4,6 +4,34 @@
 set -euo pipefail
 IFS=$'\n\t'
 
+# Create config directory and file if they don't exist
+CONFIG_DIR="$HOME/.config/streamdeck-audio-player"
+CONFIG_FILE="$CONFIG_DIR/config"
+
+if [[ ! -d "$CONFIG_DIR" ]]; then
+    mkdir -p "$CONFIG_DIR"
+fi
+
+if [[ ! -f "$CONFIG_FILE" ]]; then
+    echo "# StreamDeck Audio Player Configuration" > "$CONFIG_FILE"
+    echo "PWD=\"$(pwd)\"" >> "$CONFIG_FILE"
+fi
+
+# Source config file
+if [[ -f "$CONFIG_FILE" ]]; then
+    # Check if config is a regular file
+    if [[ ! -f "$CONFIG_FILE" ]] || [[ -L "$CONFIG_FILE" ]]; then
+        echo "Error: Invalid config file"
+        exit 1
+    fi
+    # Check if config is owned by the current user
+    if [[ "$(stat -c %u "$CONFIG_FILE")" != "$(id -u)" ]]; then
+        echo "Error: Config file must be owned by the current user"
+        exit 1
+    fi
+    source "$CONFIG_FILE"
+fi
+
 # Function to sanitize path
 sanitize_path() {
     local path="$1"
@@ -42,21 +70,6 @@ END_TIME=""
 VOLUME=100
 AUDIO_FILE=""
 AUDIO_DEVICE=""
-
-# Source .env file if it exists (with validation)
-if [[ -f ".env" ]]; then
-    # Check if .env is a regular file
-    if [[ ! -f ".env" ]] || [[ -L ".env" ]]; then
-        echo "Error: Invalid .env file"
-        exit 1
-    fi
-    # Check if .env is owned by the current user
-    if [[ "$(stat -c %u .env)" != "$(id -u)" ]]; then
-        echo "Error: .env file must be owned by the current user"
-        exit 1
-    fi
-    source .env
-fi
 
 # Check if mpv is installed
 if ! command -v mpv &> /dev/null; then
@@ -143,7 +156,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         *)
             if [[ -z "$AUDIO_FILE" ]]; then
-                AUDIO_FILE="$1"
+                AUDIO_FILE="$PWD/$1"
             else
                 echo "Error: Unexpected argument: $1"
                 usage
@@ -169,15 +182,19 @@ if [[ ! -f "$AUDIO_FILE_ABS" ]] || [[ -L "$AUDIO_FILE_ABS" ]]; then
 fi
 
 # Find the PID(s) of mpv playing exactly this file
-PIDS=$(pgrep -af "mpv" | awk -v file="$AUDIO_FILE_ABS" '
-    {
-        for (i=2; i<=NF; i++) {
-            if ($i == file) {
-                print $1
+PIDS=""
+if pgrep -x mpv > /dev/null; then
+    PIDS=$(pgrep -af "mpv" 2>/dev/null | awk -v file="$AUDIO_FILE_ABS" '
+        {
+            for (i=2; i<=NF; i++) {
+                if ($i == file) {
+                    print $1
+                    exit
+                }
             }
         }
-    }
-')
+    ' || echo "")
+fi
 
 if [[ -n "$PIDS" ]]; then
     echo "This exact audio file is already playing. Stopping..."
