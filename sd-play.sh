@@ -22,6 +22,11 @@ VOLUME=100
 AUDIO_FILE=""
 AUDIO_DEVICE=""
 
+# Source .env file if it exists
+if [[ -f ".env" ]]; then
+    source .env
+fi
+
 # Check if mpv is installed
 if ! command -v mpv &> /dev/null; then
     echo "Error: mpv is not installed. Please install it first."
@@ -81,7 +86,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         *)
             if [[ -z "$AUDIO_FILE" ]]; then
-                AUDIO_FILE="/home/bro/Documents/Streamdeck/Audio/$1"
+                AUDIO_FILE="$1"
             else
                 echo "Error: Unexpected argument: $1"
                 usage
