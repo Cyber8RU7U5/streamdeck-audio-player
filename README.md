@@ -2,6 +2,20 @@
 
 A bash script for playing audio files with various options, designed to work with Streamdeck.
 
+## Quick Start
+
+```bash
+# Clone the repository
+git clone https://github.com/Cyber8RU7U5/streamdeck-audio-player.git
+cd streamdeck-audio-player
+
+# Make the script executable
+chmod +x sd-play.sh
+
+# Run the script
+./sd-play.sh audio.mp3
+```
+
 [Installation](#installation)
 
 ## Features
@@ -84,47 +98,117 @@ PWD="/path/to/your/audio/files"
 - `mpv` media player
 - `bash` shell
 - `realpath` (usually comes with coreutils)
+- `git` (for cloning the repository)
 
 ### Package Manager Installation
 
 #### Arch Linux
 ```bash
-sudo pacman -S mpv
+# Install dependencies
+sudo pacman -S mpv git
+
+# Clone and setup
+git clone https://github.com/Cyber8RU7U5/streamdeck-audio-player.git
+cd streamdeck-audio-player
+chmod +x sd-play.sh
+
+# Create alias (add to ~/.bashrc or ~/.zshrc)
+echo 'alias sd-play="~/path/to/streamdeck-audio-player/sd-play.sh"' >> ~/.bashrc
+source ~/.bashrc
 ```
 
 #### Fedora
 ```bash
-sudo dnf install mpv
+# Install dependencies
+sudo dnf install mpv git
+
+# Clone and setup
+git clone https://github.com/Cyber8RU7U5/streamdeck-audio-player.git
+cd streamdeck-audio-player
+chmod +x sd-play.sh
+
+# Create alias (add to ~/.bashrc or ~/.zshrc)
+echo 'alias sd-play="~/path/to/streamdeck-audio-player/sd-play.sh"' >> ~/.bashrc
+source ~/.bashrc
 ```
 
 #### Ubuntu/Debian
 ```bash
-sudo apt install mpv
+# Install dependencies
+sudo apt install mpv git
+
+# Clone and setup
+git clone https://github.com/Cyber8RU7U5/streamdeck-audio-player.git
+cd streamdeck-audio-player
+chmod +x sd-play.sh
+
+# Create alias (add to ~/.bashrc or ~/.zshrc)
+echo 'alias sd-play="~/path/to/streamdeck-audio-player/sd-play.sh"' >> ~/.bashrc
+source ~/.bashrc
 ```
 
 #### CentOS/RHEL
 ```bash
+# Install dependencies
 sudo yum install epel-release
-sudo yum install mpv
+sudo yum install mpv git
+
+# Clone and setup
+git clone https://github.com/Cyber8RU7U5/streamdeck-audio-player.git
+cd streamdeck-audio-player
+chmod +x sd-play.sh
+
+# Create alias (add to ~/.bashrc or ~/.zshrc)
+echo 'alias sd-play="~/path/to/streamdeck-audio-player/sd-play.sh"' >> ~/.bashrc
+source ~/.bashrc
 ```
 
 #### macOS (using Homebrew)
 ```bash
-brew install mpv
+# Install dependencies
+brew install mpv git
+
+# Clone and setup
+git clone https://github.com/Cyber8RU7U5/streamdeck-audio-player.git
+cd streamdeck-audio-player
+chmod +x sd-play.sh
+
+# Create alias (add to ~/.zshrc or ~/.bash_profile)
+echo 'alias sd-play="~/path/to/streamdeck-audio-player/sd-play.sh"' >> ~/.zshrc
+source ~/.zshrc
 ```
 
 #### Windows (using Chocolatey)
 ```bash
-choco install mpv
+# Install dependencies
+choco install mpv git
+
+# Clone and setup (in Git Bash or WSL)
+git clone https://github.com/Cyber8RU7U5/streamdeck-audio-player.git
+cd streamdeck-audio-player
+chmod +x sd-play.sh
+
+# Create alias (add to ~/.bashrc)
+echo 'alias sd-play="~/path/to/streamdeck-audio-player/sd-play.sh"' >> ~/.bashrc
+source ~/.bashrc
 ```
 
 #### Windows Subsystem for Linux (WSL)
 ```bash
 # For Ubuntu/Debian-based WSL
-sudo apt install mpv
+sudo apt install mpv git
 
 # For Fedora-based WSL
-sudo dnf install mpv
+sudo dnf install mpv git
+
+# Clone and setup
+git clone https://github.com/Cyber8RU7U5/streamdeck-audio-player.git
+cd streamdeck-audio-player
+chmod +x sd-play.sh
+
+# Create alias (add to ~/.bashrc)
+echo 'alias sd-play="~/path/to/streamdeck-audio-player/sd-play.sh"' >> ~/.bashrc
+source ~/.bashrc
 ```
 
 ### Manual Installation
@@ -132,6 +216,16 @@ sudo dnf install mpv
 1. Download the latest mpv release from [mpv.io](https://mpv.io/installation/)
 2. Follow the build instructions for your platform
 3. Make sure the `mpv` binary is in your system PATH
+4. Clone the repository:
+```bash
+git clone https://github.com/Cyber8RU7U5/streamdeck-audio-player.git
+cd streamdeck-audio-player
+chmod +x sd-play.sh
+
+# Create alias (add to your shell's rc file)
+echo 'alias sd-play="~/path/to/streamdeck-audio-player/sd-play.sh"' >> ~/.bashrc
+source ~/.bashrc
+```
 
 ### Script Installation
 
@@ -141,7 +235,12 @@ sudo dnf install mpv
 chmod +x sd-play.sh
 ```
 3. (Optional) Create a `.env` file in the same directory as the script
-4. Test the installation:
+4. Create an alias (add to your shell's rc file):
 ```bash
-./sd-play.sh --help
+echo 'alias sd-play="~/path/to/streamdeck-audio-player/sd-play.sh"' >> ~/.bashrc
+source ~/.bashrc
+```
+5. Test the installation:
+```bash
+sd-play --help
 ```
