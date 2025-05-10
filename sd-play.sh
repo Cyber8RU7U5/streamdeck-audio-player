@@ -117,5 +117,6 @@ MPV_CMD="$MPV_CMD --volume=$VOLUME"
 # Add audio file
 MPV_CMD="$MPV_CMD \"$AUDIO_FILE\""
 
-# Execute the command in background and exit
-eval "$MPV_CMD &" 
+# Execute the command in background with proper process management
+nohup bash -c "$MPV_CMD" > /dev/null 2>&1 &
+disown 
