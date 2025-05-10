@@ -2,6 +2,8 @@
 
 A bash script for playing audio files with various options, designed to work with Streamdeck.
 
+[Installation](#installation)
+
 ## Features
 
 - Play audio files with customizable options
@@ -75,3 +77,71 @@ PWD="/path/to/your/audio/files"
 - `mpv` media player
 - Bash shell
 - Linux/Unix environment
+
+## Installation
+
+### Dependencies
+- `mpv` media player
+- `bash` shell
+- `realpath` (usually comes with coreutils)
+
+### Package Manager Installation
+
+#### Arch Linux
+```bash
+sudo pacman -S mpv
+```
+
+#### Fedora
+```bash
+sudo dnf install mpv
+```
+
+#### Ubuntu/Debian
+```bash
+sudo apt install mpv
+```
+
+#### CentOS/RHEL
+```bash
+sudo yum install epel-release
+sudo yum install mpv
+```
+
+#### macOS (using Homebrew)
+```bash
+brew install mpv
+```
+
+#### Windows (using Chocolatey)
+```bash
+choco install mpv
+```
+
+#### Windows Subsystem for Linux (WSL)
+```bash
+# For Ubuntu/Debian-based WSL
+sudo apt install mpv
+
+# For Fedora-based WSL
+sudo dnf install mpv
+```
+
+### Manual Installation
+
+1. Download the latest mpv release from [mpv.io](https://mpv.io/installation/)
+2. Follow the build instructions for your platform
+3. Make sure the `mpv` binary is in your system PATH
+
+### Script Installation
+
+1. Clone this repository or download the script
+2. Make the script executable:
+```bash
+chmod +x sd-play.sh
+```
+3. (Optional) Create a `.env` file in the same directory as the script
+4. Test the installation:
+```bash
+./sd-play.sh --help
+```
