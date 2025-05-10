@@ -77,6 +77,13 @@ if ! command -v mpv &> /dev/null; then
     exit 1
 fi
 
+# Function to send notification if notify-send is available
+send_notification() {
+    if command -v notify-send &> /dev/null; then
+        notify-send "StreamDeck Audio Player" "$1"
+    fi
+}
+
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -211,6 +218,7 @@ if [[ -n "$PIDS" ]]; then
         fi
     done
     kill $PIDS
+    send_notification "Stopped playing: $(basename "$AUDIO_FILE_ABS")"
     exit 0
 fi
 
@@ -247,4 +255,5 @@ MPV_CMD="$MPV_CMD \"$AUDIO_FILE_ABS\""
 
 # Execute the command in background with proper process management
 nohup bash -c "$MPV_CMD" > /dev/null 2>&1 &
-disown 
+disown
+send_notification "Now playing: $(basename "$AUDIO_FILE_ABS")" 
