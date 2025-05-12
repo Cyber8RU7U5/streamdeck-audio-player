@@ -37,6 +37,8 @@ chmod +x sd-play.sh
 
 # Run the script
 ./sd-play.sh audio.mp3
+
+# Add the script to your bin folder for streamdeck
 ```
 
 [Installation](#installation)
